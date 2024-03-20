@@ -1,0 +1,15 @@
+#set CPU architecture
+FROM debian:latest
+RUN apt-get update && apt-get upgrade -y
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential \
+  g++ libomp-dev cmake git libgoogle-perftools-dev wget unzip autoconf libtool google-perftools libgoogle-perftools-dev kcachegrind m4 libgmp-dev libboost-all-dev
+
+#Build TFHEpp (with tfhepp-kenmaro)
+WORKDIR /root/
+RUN git clone https://github.com/kenmaro3/TFHEpp.git
+WORKDIR /root/TFHEpp/thirdparties/cereal/
+RUN git clone https://github.com/USCiLab/cereal.git
+ENV CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/root/TFHEpp/thirdparties/cereal/cereal/include
+RUN mkdir /root/TFHEpp/build
+WORKDIR /root/TFHEpp/build 
+RUN cmake .. -DENABLE_TEST=ON  && make 
